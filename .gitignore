@@ -1,0 +1,8 @@
+local.properties
+.idea
+.cxx
+build
+.gradle
+dist
+app/src/main/res/drawable/ic_launcher.png
+

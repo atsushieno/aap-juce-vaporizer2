@@ -1,0 +1,211 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 23a7cd7..a7b9d94 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -200,7 +200,7 @@ target_compile_definitions(${PROJECT_NAME}
+     JUCE_WEB_BROWSER=0
+     JUCE_WIN_PER_MONITOR_DPI_AWARE=0
+     JUCE_DISPLAY_SPLASH_SCREEN=0
+-    JUCE_DSP_USE_STATIC_FFTW=1
++    #JUCE_DSP_USE_STATIC_FFTW=1
+ )
+ 
+ target_compile_options(${PROJECT_NAME} 
+@@ -430,7 +430,7 @@ target_link_libraries(${PROJECT_NAME}
+     juce::juce_gui_basics
+     juce::juce_gui_extra
+     juce::juce_opengl
+-    fftw3f
++    #fftw3f
+ )
+ 
+ if(NOT WIN32)
+@@ -473,3 +473,54 @@ foreach(data Noises Tables Presets)
+     ${CMAKE_INSTALL_DATAROOTDIR}/Vaporizer2
+   )
+ endforeach()
++
++# begin JUCEAAP specific -->
++
++include_directories(
++        "${AAP_DIR}/include"
++        "${JUCE_DIR}/modules"
++)
++
++juce_add_modules(${AAP_JUCE_DIR}/aap-modules/aap_audio_processors)
++target_link_libraries(${PROJECT_NAME}
++        PRIVATE
++        aap_audio_processors
++)
++
++add_compile_definitions(
++        [[JUCEAAP_USE_UNIQUE_ID=1]]
++        [[JUCEAAP_HOSTED_PARAMETER=1]]
++        [[JUCEAAP_HAVE_AUDIO_PLAYHEAD_NEW_POSITION_INFO=1]]
++)
++
++if (ANDROID)
++  add_library("cpufeatures" STATIC "${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
++  set_source_files_properties("${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c" PROPERTIES COMPILE_FLAGS "-Wno-sign-conversion -Wno-gnu-statement-expression")
++
++  # dependencies
++  find_library(log "log")
++  find_library(android "android")
++  find_library(glesv2 "GLESv2")
++  find_library(egl "EGL")
++  set(cpufeatures_lib "cpufeatures")
++  set(oboe_lib "oboe")
++  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
++
++  add_compile_definitions(
++          [[JUCE_ANDROID=1]]
++          [[JUCE_DONT_AUTO_OPEN_MIDI_DEVICES_ON_MOBILE=1]]
++          [[JUCE_PUSH_NOTIFICATIONS_ACTIVITY="com/rmsl/juce/JuceActivity"]]
++          [[JUCE_PUSH_NOTIFICATIONS=1]]
++          [[JUCE_USE_ANDROID_OBOE_STABILIZED_CALLBACK=1]]
++  )
++
++  target_link_libraries(${PROJECT_NAME}
++          PRIVATE
++          ${log}
++          ${android}
++          ${glesv2}
++          ${egl}
++          ${cpufeatures_lib}
++  )
++endif (ANDROID)
++# <-- end JUCEAAP specific
+Submodule VASTvaporizer/Source/AnaMark-Tuning-Library contains modified content
+diff --git a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp b/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
+index 7c13358..41181b0 100755
+--- a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
++++ b/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
+@@ -14,7 +14,6 @@
+ 
+ 
+ 
+-
+ namespace TUN
+ {
+ 
+@@ -339,7 +338,9 @@ std::string dtostr(double dblValue)
+ 	// 		Original call was _gcvt, where _gcvt was Windows only
+ 	//    May not be avaliable in all compilers, nor operate the same
+ 	// 		gcvt is avaliable in gcc v9.2.0 Homebrew
+-	return std::string(gcvt(dblValue, 20, sz));
++	//return std::string(gcvt(dblValue, 20, sz));
++	snprintf(sz, 30, "%f", dblValue);
++	return std::string(sz);
+ }
+ 
+ std::string	GetAsSection(const std::string & str)
+diff --git a/VASTvaporizer/Source/Engine/Filter/VASTQFilter.cpp b/VASTvaporizer/Source/Engine/Filter/VASTQFilter.cpp
+index 38d1850..5036407 100644
+--- a/VASTvaporizer/Source/Engine/Filter/VASTQFilter.cpp
++++ b/VASTvaporizer/Source/Engine/Filter/VASTQFilter.cpp
+@@ -35,7 +35,7 @@ VASTQFilter::VASTQFilter() {
+ }
+ 
+ VASTQFilter::~VASTQFilter() {
+-#if defined _MACOSX || defined JUCE_LINUX
++#if defined _MACOSX || defined JUCE_LINUX || defined JUCE_ANDROID
+ 	if (FBQ[0]) //can be that it was not even started yet
+ 		delete FBQ[0];
+ 	if (FBQ[1])
+@@ -64,7 +64,7 @@ void VASTQFilter::initQuadFilter(CVASTSettings* m_Set) {
+ 
+ 	QFirstRun = true;
+ 
+-#if defined _MACOSX || defined JUCE_LINUX
++#if defined _MACOSX || defined JUCE_LINUX || defined JUCE_ANDROID
+ 	FBQ[0] =
+ 		(VASTQFilterProcessState*)malloc((C_MAX_POLY >> 2) * sizeof(VASTQFilterProcessState));
+ 	FBQ[1] =
+diff --git a/VASTvaporizer/Source/Engine/Oversampler/VASTDecimator.cpp b/VASTvaporizer/Source/Engine/Oversampler/VASTDecimator.cpp
+index 49ae836..ce535a1 100644
+--- a/VASTvaporizer/Source/Engine/Oversampler/VASTDecimator.cpp
++++ b/VASTvaporizer/Source/Engine/Oversampler/VASTDecimator.cpp
+@@ -24,7 +24,7 @@ VAST Dynamics Audio Software (TM)
+ CDecimator::CDecimator(void)
+ {
+ 	//FACTOR4
+-#if defined _MACOSX || defined JUCE_LINUX
++#if defined _MACOSX || defined JUCE_LINUX || defined JUCE_ANDROID
+ 	m_pIRBuffer = new float[C_FACTOR4_IR_LENGTH];
+ #else
+ 	m_pIRBuffer = (float*)_aligned_malloc(C_FACTOR4_IR_LENGTH*sizeof(float), 16);
+@@ -32,7 +32,7 @@ CDecimator::CDecimator(void)
+ 	// flush buffer
+ 	memset(m_pIRBuffer, 0, C_FACTOR4_IR_LENGTH*sizeof(float));
+ 
+-#if defined _MACOSX || defined JUCE_LINUX
++#if defined _MACOSX || defined JUCE_LINUX || defined JUCE_ANDROID
+ 	m_pLeftInputBuffer = new float[C_FACTOR4_IR_LENGTH * 2];
+ 	m_pRightInputBuffer = new float[C_FACTOR4_IR_LENGTH * 2];
+ #else
+@@ -60,7 +60,7 @@ CDecimator::CDecimator(void)
+ CDecimator::~CDecimator(void)
+ {
+ 	// free up our input buffers
+-#if defined _MACOSX || defined JUCE_LINUX
++#if defined _MACOSX || defined JUCE_LINUX || defined JUCE_ANDROID
+ 	if (m_pLeftInputBuffer) delete[] m_pLeftInputBuffer;
+ 	if (m_pRightInputBuffer) delete[] m_pRightInputBuffer;
+ 	if (m_pIRBuffer) delete[] m_pIRBuffer;
+diff --git a/VASTvaporizer/Source/Plugin/VASTAudioProcessor.cpp b/VASTvaporizer/Source/Plugin/VASTAudioProcessor.cpp
+index bd021e1..15fafee 100644
+--- a/VASTvaporizer/Source/Plugin/VASTAudioProcessor.cpp
++++ b/VASTvaporizer/Source/Plugin/VASTAudioProcessor.cpp
+@@ -1777,6 +1777,10 @@ char* VASTAudioProcessor::_strncpy(char* dst, const char* src, size_t maxLen)
+ }
+ 
+ String VASTAudioProcessor::getVSTPath() {
++#if JUCE_ANDROID // There is no global app directory, so use the entire app directory.
++    return File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
++#endif
++
+ 	FileSearchPath defaultVSTPaths;
+ 	const String programFiles(File::getSpecialLocation(File::globalApplicationsDirectory).getFullPathName());
+ 
+@@ -2102,7 +2106,7 @@ String VASTAudioProcessor::getLocalMachineID() {
+ 	uint64 num = File::getSpecialLocation(File::userHomeDirectory).getFileIdentifier();
+ #elif JUCE_MAC
+ 	uint64 num = File("~").getFileIdentifier();
+-#elif JUCE_LINUX
++#elif JUCE_LINUX || defined JUCE_ANDROID
+ 	uint64 num = File("~").getFileIdentifier();
+ #endif
+ 
+@@ -2567,7 +2571,7 @@ String VASTAudioProcessor::getSettingsFilePath(bool read, bool &migrate_legacy)
+ 	filename = File::getSpecialLocation(File::userApplicationDataDirectory).getChildFile("Vaporizer2").getChildFile(settingsFile).getFullPathName();
+ #elif JUCE_MAC
+ 	filename = File::getSpecialLocation(File::userApplicationDataDirectory).getChildFile("Application Support").getChildFile("Vaporizer2").getChildFile(settingsFile).getFullPathName();
+-#elif JUCE_LINUX
++#elif JUCE_LINUX || JUCE_ANDROID
+ 	filename = File::getSpecialLocation(File::userApplicationDataDirectory).getChildFile("Vaporizer2").getChildFile(settingsFile).getFullPathName();
+ #endif
+ 
+diff --git a/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp b/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
+index aaff921..a975908 100644
+--- a/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
++++ b/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
+@@ -116,8 +116,8 @@ void VASTOscilloscopeOGL2D::renderOpenGL()
+     // Enable Alpha Blending
+     glEnable (GL_BLEND);
+     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);       
+-	glEnable(GL_LINE_SMOOTH);
+-	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
++	//glEnable(GL_LINE_SMOOTH);
++	//glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+ 	glLineWidth(2.0f);
+        
+ 	shader->use();
+@@ -228,7 +228,7 @@ void VASTOscilloscopeOGL2D::renderOpenGL()
+     // Reset the element buffers so child Components draw correctly
+     openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
+     openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
+-	glDisable(GL_LINE_SMOOTH);    
++	//glDisable(GL_LINE_SMOOTH);
+ }
+     
+     

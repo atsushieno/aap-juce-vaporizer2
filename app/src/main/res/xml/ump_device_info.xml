@@ -1,0 +1,6 @@
+<devices>
+    <device name="Vaporizer2" manufacturer="VASTDynamics" product="Vaporizer2">
+        <port name="port1" />
+    </device>
+</devices>
+
