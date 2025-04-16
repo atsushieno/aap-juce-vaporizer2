@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 23a7cd7..af63211 100644
+index 23a7cd7..6c0dac8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -200,7 +200,7 @@ target_compile_definitions(${PROJECT_NAME}
@@ -11,14 +11,14 @@ index 23a7cd7..af63211 100644
  )
  
  target_compile_options(${PROJECT_NAME} 
-@@ -395,6 +395,7 @@ else()
-   add_library(fftw3f STATIC IMPORTED)
- endif(UNIX AND NOT APPLE)
+@@ -387,6 +387,7 @@ target_compile_options(VASTvaporizer2_BinaryData
+ 	${MY_PUBLIC_COMPILE_OPTIONS}
+ )
  
 +if(false) # we don't need external fftw3f on Android (can't depend on it)
- if(WIN32)
-   set_property(TARGET fftw3f PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-   set_target_properties(fftw3f PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/fftw-3.3.10/lib/fftw3f.lib)
+ if(UNIX AND NOT APPLE) #linux
+   target_link_libraries(${PROJECT_NAME} PRIVATE atomic)
+   find_package(PkgConfig REQUIRED)
 @@ -411,6 +412,7 @@ if(APPLE)
      set_target_properties(fftw3f PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/fftw-3.3.10/lib/libfftw3f_universal.a) 
    endif()
