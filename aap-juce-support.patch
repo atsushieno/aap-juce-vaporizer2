@@ -179,7 +179,7 @@ index bd021e1..15fafee 100644
  }
  
  String VASTAudioProcessor::getVSTPath() {
-+#if JUCE_ANDROID // There is no global app directory, so use the entire app directory.
++#if JUCE_ANDROID
 +    return File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
 +#endif
 +

@@ -19,6 +19,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID=1",
+                        "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
                         "-DAAP_DIR=${System.env.AAP_DIR != null ? System.env.AAP_DIR : "$projectDir/../external/aap-core"}",
                         "-DAAP_JUCE_DIR=${System.env.AAP_JUCE_DIR != null ? System.env.AAP_JUCE_DIR : "$projectDir/../external/aap-juce"}",
                         "-DANDROID_STL=c++_shared", "-DANDROID_CPP_FEATURES=exceptions rtti"
@@ -34,6 +35,49 @@ android {
                  "../external/aap-juce/java"]
         main.res.srcDirs +=
                 []
+        main.assets.srcDirs += ["$buildDir/generated-assets"]
+    }
+
+    // Copy Vaporizer2 presets as assets.
+    // Since Vaporizer2 presets, wavetables, and noises are huge, we limit the files to copy by size.
+
+    def vaporizerSrc = "$projectDir/../external/Vaporizer2/VASTvaporizer"
+    def generatedAssets = "$buildDir/generated-assets/Vaporizer2"
+
+    def copyResourcesUpToLimit = { srcDir, dstDir, limitBytes ->
+        def files = []
+        new File(srcDir).eachFileRecurse { f ->
+            if (f.isFile()) files << f
+        }
+        files.sort { it.length() }
+        long total = 0
+        files.each { f ->
+            if (total + f.length() <= limitBytes) {
+                def rel = new File(srcDir).toURI().relativize(f.toURI()).toString()
+                def dst = new File(dstDir, rel)
+                dst.parentFile.mkdirs()
+                dst.bytes = f.bytes
+                total += f.length()
+            }
+        }
+    }
+
+    task generateVaporizerAssets {
+        inputs.dir "$vaporizerSrc/Noises"
+        inputs.dir "$vaporizerSrc/Tables"
+        inputs.dir "$vaporizerSrc/Presets"
+        outputs.dir generatedAssets
+        doLast {
+            copyResourcesUpToLimit("$vaporizerSrc/Noises",  "$generatedAssets/Noises",  50 * 1024 * 1024)
+            copyResourcesUpToLimit("$vaporizerSrc/Tables",  "$generatedAssets/Tables",  50 * 1024 * 1024)
+            copyResourcesUpToLimit("$vaporizerSrc/Presets", "$generatedAssets/Presets", 100 * 1024 * 1024)
+        }
+    }
+
+    afterEvaluate {
+        android.applicationVariants.all { variant ->
+            variant.mergeAssetsProvider.get().dependsOn generateVaporizerAssets
+        }
     }
 
     dependencies {
