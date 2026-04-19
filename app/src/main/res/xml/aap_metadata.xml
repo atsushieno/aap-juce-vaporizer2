@@ -4,7 +4,7 @@
   <plugin name="Vaporizer2" category="Instrument"
       developer="VAST Dynamics / AAP Porting Project" unique-id="juceaap:vaporizer2" library="libVASTvaporizer2_Standalone.so"
       entrypoint="GetJuceAAPFactoryStandalone"
-      gui:ui-view-factory="org.androidaudioplugin.ui.compose.ComposeAudioPluginViewFactory"
+      gui:ui-view-factory="org.androidaudioplugin.juce.JuceAudioPluginViewFactory"
       xmlns:gui="urn://androidaudioplugin.org/extensions/gui">
     <extensions>
       <extension uri="urn://androidaudioplugin.org/extensions/plugin-info/v3"/>

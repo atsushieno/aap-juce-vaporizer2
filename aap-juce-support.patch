@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 23a7cd7..6c0dac8 100644
+index 23a7cd7..ea32e3f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -200,7 +200,7 @@ target_compile_definitions(${PROJECT_NAME}
@@ -36,7 +36,7 @@ index 23a7cd7..6c0dac8 100644
  )
  
  if(NOT WIN32)
-@@ -473,3 +475,54 @@ foreach(data Noises Tables Presets)
+@@ -473,3 +475,57 @@ foreach(data Noises Tables Presets)
      ${CMAKE_INSTALL_DATAROOTDIR}/Vaporizer2
    )
  endforeach()
@@ -61,6 +61,8 @@ index 23a7cd7..6c0dac8 100644
 +)
 +
 +if (ANDROID)
++  find_package(androidaudioplugin REQUIRED CONFIG)
++
 +  add_library("cpufeatures" STATIC "${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
 +  set_source_files_properties("${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c" PROPERTIES COMPILE_FLAGS "-Wno-sign-conversion -Wno-gnu-statement-expression")
 +
@@ -88,12 +90,13 @@ index 23a7cd7..6c0dac8 100644
 +          ${glesv2}
 +          ${egl}
 +          ${cpufeatures_lib}
++          androidaudioplugin::androidaudioplugin
 +  )
 +endif (ANDROID)
 +# <-- end JUCEAAP specific
 Submodule VASTvaporizer/Source/AnaMark-Tuning-Library contains modified content
 diff --git a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp b/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
-index 7c13358..41181b0 100755
+index 7c13358..7ab5901 100755
 --- a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
 +++ b/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
 @@ -14,7 +14,6 @@
@@ -223,5 +226,3 @@ index aaff921..a975908 100644
 -	glDisable(GL_LINE_SMOOTH);    
 +	//glDisable(GL_LINE_SMOOTH);
  }
-     
-     
