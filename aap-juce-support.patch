@@ -94,7 +94,6 @@ index 23a7cd7..ea32e3f 100644
 +  )
 +endif (ANDROID)
 +# <-- end JUCEAAP specific
-Submodule VASTvaporizer/Source/AnaMark-Tuning-Library contains modified content
 diff --git a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp b/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
 index 7c13358..7ab5901 100755
 --- a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
