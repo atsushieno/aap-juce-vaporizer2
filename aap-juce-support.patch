@@ -94,7 +94,6 @@ index 23a7cd7..ea32e3f 100644
 +  )
 +endif (ANDROID)
 +# <-- end JUCEAAP specific
-Submodule VASTvaporizer/Source/AnaMark-Tuning-Library contains modified content
 diff --git a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp b/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
 index 7c13358..41181b0 100755
 --- a/VASTvaporizer/Source/AnaMark-Tuning-Library/TUN_StringTools.cpp
@@ -205,7 +204,7 @@ index bd021e1..15fafee 100644
  #endif
  
 diff --git a/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp b/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
-index aaff921..a975908 100644
+index aaff921..3f10421 100644
 --- a/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
 +++ b/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
 @@ -116,8 +116,8 @@ void VASTOscilloscopeOGL2D::renderOpenGL()
@@ -228,3 +227,17 @@ index aaff921..a975908 100644
  }
      
      
+@@ -268,6 +268,13 @@ void VASTOscilloscopeOGL2D::createShaders()
+     "}\n";
+         
+     fragmentShader =
++    // GLSL ES 3.0 (Android) requires an explicit default precision for float in
++    // fragment shaders – there is none built-in.  The GL_ES macro is predefined
++    // by every GLSL ES compiler (ES 1.0 through 3.2), so this is a no-op on
++    // desktop GLSL where precision qualifiers are not mandatory.
++    "#ifdef GL_ES\n"
++    "precision mediump float;\n"
++    "#endif\n"
+ 	"uniform vec4 osciColour;\n"
+     //"uniform vec2 resolutionXY;\n"
+     "\n"
