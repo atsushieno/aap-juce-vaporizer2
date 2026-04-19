@@ -205,7 +205,7 @@ index bd021e1..15fafee 100644
  #endif
  
 diff --git a/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp b/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
-index aaff921..3f10421 100644
+index aaff921..45479e1 100644
 --- a/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
 +++ b/VASTvaporizer/Source/Plugin/VASTScopeDisplay/VASTOscilloscopeOGL2D.cpp
 @@ -116,8 +116,8 @@ void VASTOscilloscopeOGL2D::renderOpenGL()
@@ -241,4 +241,4 @@ index aaff921..3f10421 100644
 +    "#endif\n"
  	"uniform vec4 osciColour;\n"
      //"uniform vec2 resolutionXY;\n"
-     "\n"
+     "\n"     		 	  	  
