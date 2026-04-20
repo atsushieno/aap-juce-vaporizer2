@@ -74,10 +74,8 @@ android {
         }
     }
 
-    afterEvaluate {
-        android.applicationVariants.all { variant ->
-            variant.mergeAssetsProvider.get().dependsOn generateVaporizerAssets
-        }
+    tasks.matching { it.name == "preBuild" }.configureEach {
+        dependsOn generateVaporizerAssets
     }
 
     dependencies {
