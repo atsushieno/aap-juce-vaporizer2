@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugins xmlns="urn:org.androidaudioplugin.core">
-  <plugin name="Vaporizer2" category="Instrument"
-      developer="VAST Dynamics / AAP Porting Project" unique-id="juceaap:vaporizer2" library="libVASTvaporizer2_Standalone.so"
+  <plugin name="Vaporizer2 AAP" category="Instrument"
+      developer="VAST Dynamics" unique-id="juceaap:vaporizer2" library="libVASTvaporizer2_Standalone.so"
       entrypoint="GetJuceAAPFactoryStandalone"
       gui:ui-view-factory="org.androidaudioplugin.juce.JuceAudioPluginViewFactory"
       xmlns:gui="urn://androidaudioplugin.org/extensions/gui">
-    <extensions>
-      <extension uri="urn://androidaudioplugin.org/extensions/plugin-info/v3"/>
-      <extension uri="urn://androidaudioplugin.org/extensions/parameters/v4"/>
-      <extension uri="urn://androidaudioplugin.org/extensions/presets/v3"/>
-      <extension uri="urn://androidaudioplugin.org/extensions/state/v4"/>
-      <extension uri="urn://androidaudioplugin.org/extensions/midi2/v3"/>
-      <extension uri="urn://androidaudioplugin.org/extensions/gui/v3"/>
-    </extensions>
+    <extensions bom="0.12.0" />
     <ports>
       <port direction="output" content="audio" name="Left"/>
       <port direction="output" content="audio" name="Right"/>
