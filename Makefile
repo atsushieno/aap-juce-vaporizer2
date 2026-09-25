@@ -19,6 +19,7 @@ JUCE_PATCHES= \
 	$(AAP_JUCE_DIR)/juce-patches/7.0.6/export-jni-symbols.patch \
 	$(AAP_JUCE_DIR)/juce-patches/7.0.11/disable-cgwindowlistcreateimage.patch \
 	$(AAP_JUCE_DIR)/juce-patches/7.0.6/support-plugin-ui.patch \
-	$(AAP_JUCE_DIR)/juce-patches/7.0.11/juce-component-peer-view-touch.patch
+	$(AAP_JUCE_DIR)/juce-patches/7.0.11/juce-component-peer-view-touch.patch \
+	$(AAP_JUCE_DIR)/juce-patches/7.0.11/component-peer-view-unregister-lifecycle-callbacks.patch
 
 include $(AAP_JUCE_DIR)/Makefile.cmake-common
