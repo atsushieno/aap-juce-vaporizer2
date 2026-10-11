@@ -16,8 +16,6 @@ android {
             cmake {
                 arguments "-DANDROID=1",
                         "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
-                        "-DAAP_DIR=${System.env.AAP_DIR != null ? System.env.AAP_DIR : "$projectDir/../external/aap-core"}",
-                        "-DAAP_JUCE_DIR=${System.env.AAP_JUCE_DIR != null ? System.env.AAP_JUCE_DIR : "$projectDir/../external/aap-juce"}",
                         "-DANDROID_STL=c++_shared", "-DANDROID_CPP_FEATURES=exceptions rtti"
             }
         }
@@ -110,3 +108,5 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 }
+
+apply from: '../external/aap-juce/gradle/aap-juce.gradle'
